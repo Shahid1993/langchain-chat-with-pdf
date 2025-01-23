@@ -1,0 +1,8 @@
+langchain==0.3.15
+langchain_openai==0.3.1
+langchain-community==0.3.15
+PyPDF2==3.0.1
+python-dotenv==1.0.1
+streamlit==1.41.1
+faiss-cpu==1.9.0.post1
+# altair<5
