@@ -15,7 +15,7 @@ import faiss
 AZURE_OPENAI_EMBEDDING_API_KEY = os.getenv("AZURE_OPENAI_EMBEDDING_API_KEY")
 AZURE_OPENAI_EMBEDDING_ENDPOINT = os.getenv("AZURE_OPENAI_EMBEDDING_ENDPOINT")
 AZURE_OPENAI_EMBEDDING_API_VERSION= os.getenv("AZURE_OPENAI_EMBEDDING_API_VERSION")
-os.environ["SSL_CERT_FILE"] = r"C:\Users\shahi\anaconda3\envs\streamlitdev\Library\ssl\cacert.pem"
+# os.environ["SSL_CERT_FILE"] = r"C:\Users\shahi\anaconda3\envs\streamlitdev\Library\ssl\cacert.pem"
 
 def main():
     load_dotenv()
