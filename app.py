@@ -3,16 +3,13 @@ import os
 from uuid import uuid4
 import streamlit as st
 from PyPDF2 import PdfReader
+from langchain_core.documents import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
-# from langchain_core.prompts import PromptTemplate
-# from typing_extensions import List, TypedDict
-
+from langchain_community.callbacks.manager import get_openai_callback
 from langchain.chains.question_answering import load_qa_chain
-# from langchain.chains import LLMChain, StuffDocumentsChain
 import faiss
 
 AZURE_OPENAI_EMBEDDING_API_KEY = os.getenv("AZURE_OPENAI_EMBEDDING_API_KEY")
@@ -22,7 +19,6 @@ os.environ["SSL_CERT_FILE"] = r"C:\Users\shahi\anaconda3\envs\streamlitdev\Libra
 
 def main():
     load_dotenv()
-    print(os.getenv("OPENAI_API_KEY"))
     st.set_page_config(page_title="Chat with your PDF")
     st.header("Chat with your PDF")
 
@@ -78,21 +74,21 @@ def main():
             documents.append(doc)
 
         uuids = [str(uuid4()) for _ in range(len(documents))]
-
+        print(f"Total vectors: {len(documents)}")
         vector_store.add_documents(documents=documents, ids=uuids)
+        llm = AzureChatOpenAI(
+            azure_deployment="gpt-4o-mini"
+        )
+
+        chain = load_qa_chain(llm, chain_type="stuff")
 
         user_question = st.text_input(label="Ask a question about your PDF:")
 
         if user_question:
             docs = vector_store.similarity_search(user_question, k=5)
-            # docs_content = "\n\n".join(doc.page_content for doc in docs)
-
-            llm = AzureChatOpenAI(
-                azure_deployment="gpt-4o"
-            )
-
-            chain = load_qa_chain(llm, chain_type="stuff")
-            response = chain.run(question=user_question, input_documents=docs)
+            with get_openai_callback() as cb:
+                response = chain.run(question=user_question, input_documents=docs)
+                print(cb)
 
             st.write(response)
 
